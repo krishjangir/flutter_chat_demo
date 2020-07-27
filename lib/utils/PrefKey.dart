@@ -1,0 +1,15 @@
+
+//----------------Preferance keys-----------------------------
+const SET_SELECTED_LANGUAGE = 'SET_SELECTED_LANGUAGE';
+const LOGOUT = 'LOGOUT';
+const IS_LOGGED_IN = 'IS_LOGGED_IN';
+const USER_ID = "USER_ID";
+const GENDER = "GENDER";
+const USER_NAME = "USER_NAME";
+const USER_MOBILE = "USER_MOBILE";
+const USER_ABOUT_ME = "USER_ABOUT_ME";
+const USER_PROFILE_PIC = "USER_PROFILE_PIC";
+const DEVICE_ID = "DEVICE_ID";
+const EMAIL = "EMAIL";
+const FIREBASE_NOTIFICATION_ID = "FIREBASE_NOTIFICATION_ID";
+const PINCODE = "PINCODE";
