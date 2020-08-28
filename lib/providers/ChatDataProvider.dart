@@ -24,13 +24,14 @@ class ChatDataProvider with ChangeNotifier {
   final ScrollController _listScrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
 
+
   //variables
   bool _loading = false;
   ChatState _status;
   String _message;
   String _userId;
   String _peerId;
-  String _groupChatId;
+  String _groupChatId='';
   bool _isShowSticker= false;
   var _listMessage;
   SharedPreferences myPrefs;
@@ -138,7 +139,7 @@ class ChatDataProvider with ChangeNotifier {
     StorageTaskSnapshot storageTaskSnapshot = await uploadTask.onComplete;
     storageTaskSnapshot.ref.getDownloadURL().then((downloadUrl) {
       String imageUrl = downloadUrl;
-      onSendMessage(imageUrl, 1 /*, groupChatId, userId, peerId*/);
+      onSendMessage(imageUrl, 1 );
     }, onError: (err) {
       message = "Server Error";
       status = ChatState.Error;
@@ -184,7 +185,7 @@ class ChatDataProvider with ChangeNotifier {
   //groupChatId
   Future readLocal(String peerID) async {
     myPrefs = await SharedPreferences.getInstance();
-    userId = myPrefs.getString(PrefKey.USER_ID);
+    userId =  myPrefs.getString(PrefKey.USER_ID);
     peerId = peerID;
     if (userId.hashCode <= peerId.hashCode) {
       groupChatId = '$userId-$peerId';
@@ -201,34 +202,6 @@ class ChatDataProvider with ChangeNotifier {
     final String _userId = myPrefs.getString(PrefKey.USER_ID);
     userId = _userId;
     return userId;
-  }
-
-  //backPress handle method
-  Future<bool> onBackPress(BuildContext context) {
-    if (isShowSticker) {
-      isShowSticker = false;
-    } else {
-      Firestore.instance
-          .collection('users')
-          .document(userId)
-          .updateData({'chattingWith': null});
-      Navigator.pop(context);
-    }
-    return Future.value(false);
-  }
-
-  //get sticker method
-  void getSticker() {
-    // Hide keyboard when sticker appear
-   focusNode.unfocus();
-   isShowSticker = !isShowSticker;
-  }
-
-  //onFocusChange method
-  void onFocusChange() {
-    if (focusNode.hasFocus) {
-      isShowSticker = false;
-    }
   }
 
   //isLastMessageLeft handle method
@@ -252,6 +225,37 @@ class ChatDataProvider with ChangeNotifier {
       return true;
     } else {
       return false;
+    }
+  }
+
+
+  //--------------------unused------------------------
+
+  //backPress handle method
+  Future<bool> onBackPress(BuildContext context) {
+    if (isShowSticker) {
+      isShowSticker = false;
+    } else {
+      Firestore.instance
+          .collection('users')
+          .document(userId)
+          .updateData({'chattingWith': null});
+      Navigator.pop(context);
+    }
+    return Future.value(false);
+  }
+
+  //get sticker method
+  void getSticker() {
+    // Hide keyboard when sticker appear
+    focusNode.unfocus();
+    isShowSticker = !isShowSticker;
+  }
+
+  //onFocusChange method
+  void onFocusChange() {
+    if (focusNode.hasFocus) {
+      isShowSticker = false;
     }
   }
 

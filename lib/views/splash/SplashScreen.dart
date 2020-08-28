@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_splash/flutter_splash.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_chat_app/utils/PrefKey.dart' as PrefKey;
 import 'package:flutter_chat_app/resource/Colors.dart' as AppColor;
+import 'package:flutter_chat_app/resource/Images.dart' as AppImages;
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -15,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 3), () {
+    Timer(Duration(seconds: 1), () {
       goNext();
     });
   }
@@ -35,14 +37,16 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return  Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
           Container(
-            color: AppColor.colorPrimary,
-          )
+              child: Image.asset(
+                AppImages.splash,
+                fit: BoxFit.cover,
+              ))
         ],
       ),
     );

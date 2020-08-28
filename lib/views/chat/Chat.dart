@@ -101,18 +101,13 @@ class ChatScreenState extends State<ChatScreen> {
   String peerId;
   String peerAvatar;
   File imageFile;
-
-  String id;
- // String groupChatId;
   bool isShowSticker;
-  SharedPreferences prefs;
   final FocusNode focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     focusNode.addListener(onFocusChange);
-   // groupChatId = '';
     isShowSticker = false;
     readLocal();
   }
@@ -128,18 +123,7 @@ class ChatScreenState extends State<ChatScreen> {
 
   //read pref data method
   readLocal() async {
-  /*  prefs = await SharedPreferences.getInstance();
-    id = prefs.getString(PrefKey.USER_ID) ?? '';
-    if (id.hashCode <= peerId.hashCode) {
-      groupChatId = '$id-$peerId';
-    } else {
-      groupChatId = '$peerId-$id';
-    }
-    Provider.of<ChatDataProvider>(context, listen: false).groupChatId = groupChatId;
-    Firestore.instance.collection('users').document(id).updateData({'chattingWith': peerId});*/
-
-    Provider.of<ChatDataProvider>(context, listen: false).readLocal(peerId);
-
+    await Provider.of<ChatDataProvider>(context, listen: false).readLocal(peerId);
     setState(() {});
   }
 
@@ -166,6 +150,21 @@ class ChatScreenState extends State<ChatScreen> {
       chatDataProvider.loading = false;
     }
   }
+
+  //back press handle
+  Future<bool> onBackPress(ChatDataProvider chatDataProvider) {
+    if (isShowSticker) {
+      isShowSticker = false;
+    } else {
+      Firestore.instance
+          .collection('users')
+          .document(chatDataProvider.userId)
+          .updateData({'chattingWith': null});
+      Navigator.pop(context);
+    }
+    return Future.value(false);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -203,7 +202,7 @@ class ChatScreenState extends State<ChatScreen> {
           )
         ],
       ),
-      onWillPop: () => chatDataProvider.onBackPress(context),
+      onWillPop: () =>onBackPress(chatDataProvider),
     );
   }
 

@@ -6,11 +6,15 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/firebase/auth.dart';
+import 'package:flutter_chat_app/locale/AppLocalizations.dart';
+import 'package:flutter_chat_app/providers/AppLanguage.dart';
+import 'package:flutter_chat_app/providers/LocationProvider.dart';
 import 'package:flutter_chat_app/views/contacts/Contacts.dart';
 import 'package:flutter_chat_app/views/login/AuthPhoneScreen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_chat_app/resource/Colors.dart' as AppColors;
 import 'package:flutter_chat_app/utils/PrefKey.dart' as PrefKey;
@@ -90,10 +94,11 @@ class SettingsScreenState extends State<SettingsScreen> {
         storageTaskSnapshot = value;
         storageTaskSnapshot.ref.getDownloadURL().then((downloadUrl) {
           photoUrl = downloadUrl;
-          Firestore.instance
-              .collection('users')
-              .document(id)
-              .updateData({'nickname': nickname, 'aboutMe': aboutMe, 'photoUrl': photoUrl}).then((data) async {
+          Firestore.instance.collection('users').document(id).updateData({
+            'nickname': nickname,
+            'aboutMe': aboutMe,
+            'photoUrl': photoUrl
+          }).then((data) async {
             await prefs.setString('photoUrl', photoUrl);
             setState(() {
               isLoading = false;
@@ -128,13 +133,15 @@ class SettingsScreenState extends State<SettingsScreen> {
   void handleLogOut() {
     prefs.clear();
     FireBase.auth.signOut();
-    Navigator.push(context, MaterialPageRoute(builder: (context) => PhoneAuthGetPhone()));
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => PhoneAuthGetPhone()));
   }
 
-  void handleContacts() async{
+  void handleContacts() async {
     final PermissionStatus permissionStatus = await _getPermission();
     if (permissionStatus == PermissionStatus.granted) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Contacts()));
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => Contacts()));
     }
   }
 
@@ -143,14 +150,13 @@ class SettingsScreenState extends State<SettingsScreen> {
     if (permission != PermissionStatus.granted &&
         permission != PermissionStatus.denied) {
       final Map<Permission, PermissionStatus> permissionStatus =
-      await [Permission.contacts].request();
+          await [Permission.contacts].request();
       return permissionStatus[Permission.contacts] ??
           PermissionStatus.undetermined;
     } else {
       return permission;
     }
   }
-
 
   void handleUpdateData() {
     focusNodeNickname.unfocus();
@@ -160,10 +166,11 @@ class SettingsScreenState extends State<SettingsScreen> {
       isLoading = true;
     });
 
-    Firestore.instance
-        .collection('users')
-        .document(id)
-        .updateData({'nickname': nickname, 'aboutMe': aboutMe, 'photoUrl': photoUrl}).then((data) async {
+    Firestore.instance.collection('users').document(id).updateData({
+      'nickname': nickname,
+      'aboutMe': aboutMe,
+      'photoUrl': photoUrl
+    }).then((data) async {
       await prefs.setString(PrefKey.USER_NAME, nickname);
       await prefs.setString(PrefKey.USER_ABOUT_ME, aboutMe);
       await prefs.setString(PrefKey.USER_PROFILE_PIC, photoUrl);
@@ -184,6 +191,11 @@ class SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    /* final locationProvider = Provider.of<LocationProvider>(context);
+    locationProvider.getLocation();
+    locationProvider.getLocationAddress();*/
+    var appLanguage = Provider.of<AppLanguage>(context);
+
     return Stack(
       children: <Widget>[
         SingleChildScrollView(
@@ -194,50 +206,53 @@ class SettingsScreenState extends State<SettingsScreen> {
                 child: Center(
                   child: Stack(
                     children: <Widget>[
-
                       (avatarImageFile == null)
                           ? (photoUrl != ''
-                          ? Material(
-                        child: CachedNetworkImage(
-                          placeholder: (context, url) => Container(
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.0,
-                              valueColor: AlwaysStoppedAnimation<Color>(AppColors.colorPrimary),
-                            ),
-                            width: 90.0,
-                            height: 90.0,
-                            padding: EdgeInsets.all(20.0),
-                          ),
-                          imageUrl: photoUrl,
-                          width: 90.0,
-                          height: 90.0,
-                          fit: BoxFit.cover,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(45.0)),
-                        clipBehavior: Clip.hardEdge,
-                      )
-                          : Icon(
-                        Icons.account_circle,
-                        size: 90.0,
-                        color: AppColors.colorPrimary,
-                      ))
+                              ? Material(
+                                  child: CachedNetworkImage(
+                                    placeholder: (context, url) => Container(
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.0,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                AppColors.colorPrimary),
+                                      ),
+                                      width: 90.0,
+                                      height: 90.0,
+                                      padding: EdgeInsets.all(20.0),
+                                    ),
+                                    imageUrl: photoUrl,
+                                    width: 90.0,
+                                    height: 90.0,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(45.0)),
+                                  clipBehavior: Clip.hardEdge,
+                                )
+                              : Icon(
+                                  Icons.account_circle,
+                                  size: 90.0,
+                                  color: AppColors.colorPrimary,
+                                ))
                           : Material(
-                        child: Image.file(
-                          avatarImageFile,
-                          width: 90.0,
-                          height: 90.0,
-                          fit: BoxFit.cover,
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(45.0)),
-                        clipBehavior: Clip.hardEdge,
-                      ),
+                              child: Image.file(
+                                avatarImageFile,
+                                width: 90.0,
+                                height: 90.0,
+                                fit: BoxFit.cover,
+                              ),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(45.0)),
+                              clipBehavior: Clip.hardEdge,
+                            ),
                       IconButton(
                         icon: Icon(
                           Icons.camera_alt,
                           color: AppColors.colorPrimary,
                         ),
                         onPressed: getImage,
-                        padding: EdgeInsets.only(left: 60.0,top: 60),
+                        padding: EdgeInsets.only(left: 60.0, top: 60),
                         splashColor: Colors.transparent,
                         highlightColor: AppColors.colorPrimary,
                         iconSize: 30.0,
@@ -246,7 +261,8 @@ class SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
                 width: double.infinity,
-                margin: EdgeInsets.only(left: 20.0,top: 40, right: 20.0,bottom: 20),
+                margin: EdgeInsets.only(
+                    left: 20.0, top: 40, right: 20.0, bottom: 20),
               ),
 
               // Input
@@ -256,13 +272,17 @@ class SettingsScreenState extends State<SettingsScreen> {
                   Container(
                     child: Text(
                       'Nickname',
-                      style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, color: AppColors.colorPrimary),
+                      style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.colorPrimary),
                     ),
                     margin: EdgeInsets.only(left: 10.0, bottom: 5.0, top: 10.0),
                   ),
                   Container(
                     child: Theme(
-                      data: Theme.of(context).copyWith(primaryColor: AppColors.colorPrimary),
+                      data: Theme.of(context)
+                          .copyWith(primaryColor: AppColors.colorPrimary),
                       child: TextField(
                         decoration: InputDecoration(
                           hintText: 'john',
@@ -283,13 +303,17 @@ class SettingsScreenState extends State<SettingsScreen> {
                   Container(
                     child: Text(
                       'About me',
-                      style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, color: AppColors.colorPrimary),
+                      style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.colorPrimary),
                     ),
                     margin: EdgeInsets.only(left: 10.0, top: 30.0, bottom: 5.0),
                   ),
                   Container(
                     child: Theme(
-                      data: Theme.of(context).copyWith(primaryColor: AppColors.colorPrimary),
+                      data: Theme.of(context)
+                          .copyWith(primaryColor: AppColors.colorPrimary),
                       child: TextField(
                         decoration: InputDecoration(
                           hintText: 'Busy',
@@ -308,7 +332,45 @@ class SettingsScreenState extends State<SettingsScreen> {
                 ],
                 crossAxisAlignment: CrossAxisAlignment.start,
               ),
+              /*  Container(
+                child: Text(
+                  '${locationProvider.currentLocationAddress.toString()} Location: Lat : ${locationProvider.currentLocation?.latitude}, Long : ${locationProvider.currentLocation?.longitude}',
+                  style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold, color: AppColors.colorPrimary),
+                ),
+                margin: EdgeInsets.only(left: 10.0, top: 30.0, bottom: 5.0),
+              ),*/
 
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    AppLocalizations.instance.text('welcome'),
+                    style: TextStyle(fontSize: 32),
+                  ),
+                  Text(
+                    AppLocalizations.instance.text('thank_you'),
+                    style: TextStyle(fontSize: 32),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      RaisedButton(
+                        onPressed: () {
+                          appLanguage.changeLanguage(Locale("en"));
+                        },
+                        child: Text('English'),
+                      ),
+                      RaisedButton(
+                        onPressed: () {
+                          appLanguage.changeLanguage(Locale("hi"));
+                        },
+                        child: Text('हिन्दी'),
+                      )
+                    ],
+                  )
+                ],
+              ),
               // Button
               Container(
                 child: FlatButton(
@@ -323,7 +385,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                   textColor: Colors.white,
                   padding: EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 10.0),
                 ),
-                margin: EdgeInsets.only(top: 50.0, bottom: 20.0),
+                margin: EdgeInsets.only(top: 30.0),
               ),
 
               // Button
@@ -340,7 +402,7 @@ class SettingsScreenState extends State<SettingsScreen> {
                   textColor: Colors.white,
                   padding: EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 10.0),
                 ),
-                margin: EdgeInsets.only(top: 30.0, bottom: 30.0),
+                margin: EdgeInsets.only(top: 20.0),
               ),
               // Button
               Container(
@@ -356,22 +418,24 @@ class SettingsScreenState extends State<SettingsScreen> {
                   textColor: Colors.white,
                   padding: EdgeInsets.fromLTRB(30.0, 10.0, 30.0, 10.0),
                 ),
-                margin: EdgeInsets.only(top: 30.0, bottom: 30.0),
+                margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
               ),
             ],
           ),
-          padding: EdgeInsets.only(top:15,left: 15.0, right: 15.0),
+          padding: EdgeInsets.only(top: 15, left: 15.0, right: 15.0),
         ),
 
         // Loading
         Positioned(
           child: isLoading
               ? Container(
-            child: Center(
-              child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(AppColors.colorPrimary)),
-            ),
-            color: Colors.white.withOpacity(0.8),
-          )
+                  child: Center(
+                    child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColors.colorPrimary)),
+                  ),
+                  color: Colors.white.withOpacity(0.8),
+                )
               : Container(),
         ),
       ],

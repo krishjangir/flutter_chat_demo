@@ -5,7 +5,9 @@ import 'package:flutter_chat_app/resource/Colors.dart' as AppColors;
 import 'package:flutter_chat_app/resource/Images.dart' as AppImages;
 
 import 'ChatsFragment.dart';
+import 'CognitoFragment.dart';
 import 'SettingsFragment.dart';
+import 'BioMetricFragment.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -36,8 +38,8 @@ class _HomeScreenState extends State<HomeScreen>
               child: new TabBarView(
                 children: [
                   new Container(child: ChatsFragment()),
-                  new Container(child: ChatsFragment()),
-                  new Container(child: ChatsFragment()),
+                  new Container(child: BioMetricFragment()),
+                  new Container(child: CognitoFragment()),
                   new Container(child: Settings())
                 ],
               ),
@@ -61,11 +63,11 @@ class _HomeScreenState extends State<HomeScreen>
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          new Tab(icon: new Icon(Icons.question_answer, size: 30)),
+                          new Tab(icon: new Icon(Icons.fingerprint, size: 30)),
                           new Container(
                             transform:
                             Matrix4.translationValues(0.0, -5.0, 0.0),
-                            child: new Text("Status"),
+                            child: new Text("BioAuth"),
                           ),
                         ])),
                 new Container(
@@ -73,11 +75,11 @@ class _HomeScreenState extends State<HomeScreen>
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          new Tab(icon: new Icon(Icons.call, size: 30)),
+                          new Tab(icon: new Icon(Icons.inbox, size: 30)),
                           new Container(
                             transform:
                             Matrix4.translationValues(0.0, -5.0, 0.0),
-                            child: new Text("Calls"),
+                            child: new Text("Cognito"),
                           ),
                         ])),
 

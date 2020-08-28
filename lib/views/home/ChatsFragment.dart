@@ -5,11 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chat_app/customwidgets/ProgressWidget.dart';
 import 'package:flutter_chat_app/providers/ChatDataProvider.dart';
 import 'package:flutter_chat_app/resource/Colors.dart' as AppColors;
-import 'package:flutter_chat_app/resource/Images.dart' as AppImages;
 import 'package:flutter_chat_app/views/chat/Chat.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_chat_app/utils/PrefKey.dart' as PrefKey;
 
 class ChatsFragment extends StatefulWidget {
   @override
